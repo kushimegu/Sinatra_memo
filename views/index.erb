@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title><%= @title %></title>
+</head>
+<body>
+  <h1><%= @title %></h1>
+  <ul>
+    <% @memos.each do |key, value| %>
+    <li data-id="<%= key %>">
+      <%= value["title"] %>
+    </li>
+    <% end %>
+  </ul>
+  <a href="/new"><button>追加</button></a>
+  </form>
+</body>
+</html>
