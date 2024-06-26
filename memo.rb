@@ -4,11 +4,9 @@ require 'sinatra'
 require 'sinatra/reloader'
 require 'json'
 
-memos = File.open("./sample.json") { |file| JSON.load(file) }
-
 get '/' do
   @title = 'メモアプリ'
-  @memos = memos
+  @memos = File.open("./sample.json") { |file| JSON.parse(file.read) }
   erb :index
 end
 
@@ -17,10 +15,20 @@ get '/new' do
   erb :new
 end
 
-memos.each do |key, value|
+post '/new' do
+  existing_memos = File.exist?("./sample.json") ? JSON.parse(File.read("./sample.json")) : {}
+  new_memo = { (existing_memos.size + 1).to_s => { "title" => params[:title], "content" => params[:content] }}
+  existing_memos.merge!(new_memo)
+  File.open("./sample.json", 'w') do |file|
+    str = JSON.dump(existing_memos, file)
+  end
+  redirect to("/")
+end
+
+File.open("./sample.json") { |file| JSON.parse(file.read) }.each do |key, value|
   get "/#{key}" do
     @title = 'メモアプリ'
-    @id = 1
+    @id = key
     @memo = value
     erb :show
   end
@@ -34,6 +42,6 @@ memos.each do |key, value|
 end
 
 delete '/:id' do
-  @id = memos.delete(params[:id])
+  @memo_id = memos.delete(params[:id])
   redirect to("/")
 end
