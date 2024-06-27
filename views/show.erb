@@ -9,9 +9,9 @@
     <h2><%= @memo["title"] %></h2>
     <p><%= @memo["content"] %></p>
     <a href="/<%= @id %>/edit"><button>変更</button></a>
-    <form action="/<%= @memo_id %>" method="post">
-    <input type="hidden" name="_method" value="DELETE">
-    <input type="submit" value="削除">
-</form>
+    <form action="/<%= @id %>" method="post">
+      <input type="hidden" name="_method" value="DELETE">
+      <input type="submit" value="削除">
+    </form>
   </body>
 </html>

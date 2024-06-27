@@ -20,7 +20,7 @@ post '/new' do
   new_memo = { (existing_memos.size + 1).to_s => { "title" => params[:title], "content" => params[:content] }}
   existing_memos.merge!(new_memo)
   File.open("./sample.json", 'w') do |file|
-    str = JSON.dump(existing_memos, file)
+    JSON.dump(existing_memos, file)
   end
   redirect to("/")
 end
@@ -39,9 +39,15 @@ File.open("./sample.json") { |file| JSON.parse(file.read) }.each do |key, value|
     erb :edit
   end
 
+  delete "/#{key}" do
+    @id = key
+    existing_memos = File.exist?("./sample.json") ? JSON.parse(File.read("./sample.json")) : {}
+    existing_memos.delete(@id.to_s)
+    File.open("./sample.json", 'w') do |file|
+      JSON.dump(existing_memos, file)
+    end
+    redirect to("/")
+  end
 end
 
-delete '/:id' do
-  @memo_id = memos.delete(params[:id])
-  redirect to("/")
-end
+
