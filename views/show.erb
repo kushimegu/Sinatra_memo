@@ -1,17 +1,7 @@
-<!DOCTYPE html>
-<html lang="ja">
-  <head>
-    <meta charset="utf-8">
-    <title><%= @title %></title>
-  </head>
-  <body>
-    <h1><%= @title %></h1>
-    <h2><%= @memo["title"] %></h2>
-    <p><%= @memo["content"] %></p>
-    <a href="/<%= @id %>/edit"><button>変更</button></a>
-    <form action="/<%= @id %>" method="post">
-      <input type="hidden" name="_method" value="DELETE">
-      <input type="submit" value="削除">
-    </form>
-  </body>
-</html>
+<h2><%= @memo["title"] %></h2>
+<p><%= @memo["content"] %></p>
+<a href="/<%= @id %>/edit"><button>変更</button></a>
+<form action="/<%= @id %>" method="post">
+  <input type="hidden" name="_method" value="DELETE">
+  <input type="submit" value="削除">
+</form>

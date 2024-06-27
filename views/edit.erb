@@ -1,10 +1,13 @@
-<!DOCTYPE html>
-<html lang="ja">
-  <head>
-    <meta charset="utf-8">
-    <title><%= @title %></title>
-  </head>
-  <body>
-    <h1><%= @title %></h1>
-  </body>
-</html>
+<form action="/<%= @id %>/edit" method="post">
+<form action="/<%= @id %>" method="post">
+  <input type="hidden" name="_method" value="PATCH">
+<div>
+  <label for="title">タイトル</label>
+  <input type="text" id="title" name="title" value="<%= @memo["title"]%>">
+</div>
+<div>
+<label for="title">内容</label>
+  <textarea id="content" name="content" value="<%= @memo["content"]%>"></textarea>
+</div>
+<input type="submit" value="更新">
+</form>

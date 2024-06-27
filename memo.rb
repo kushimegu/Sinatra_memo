@@ -4,50 +4,60 @@ require 'sinatra'
 require 'sinatra/reloader'
 require 'json'
 
+helpers do
+  def load_memos(file)
+    File.open(file) { |file| JSON.parse(file.read) }
+  end
+
+  def save_memos(file, memos)
+    File.open(file, 'w') do |file|
+      JSON.dump(memos, file)
+    end
+  end
+end
+
 get '/' do
-  @title = 'メモアプリ'
-  @memos = File.open("./sample.json") { |file| JSON.parse(file.read) }
+  @memos = load_memo("./sample.json")
   erb :index
 end
 
 get '/new' do
-  @title = 'メモアプリ'
   erb :new
 end
 
 post '/new' do
-  existing_memos = File.exist?("./sample.json") ? JSON.parse(File.read("./sample.json")) : {}
-  new_memo = { (existing_memos.size + 1).to_s => { "title" => params[:title], "content" => params[:content] }}
-  existing_memos.merge!(new_memo)
-  File.open("./sample.json", 'w') do |file|
-    JSON.dump(existing_memos, file)
-  end
+  memos = File.exist?("./sample.json") ? JSON.parse(File.read("./sample.json")) : {}
+  new_memo = { (memos.size + 1).to_s => { "title" => params[:title], "content" => params[:content] }}
+  memos.merge!(new_memo)
+  save_memos("./sample.json", memos)
   redirect to("/")
 end
 
-File.open("./sample.json") { |file| JSON.parse(file.read) }.each do |key, value|
-  get "/#{key}" do
-    @title = 'メモアプリ'
-    @id = key
-    @memo = value
-    erb :show
-  end
-
-  get "/#{key}/edit" do
-    @title = 'メモアプリ'
-    @memo = value
-    erb :edit
-  end
-
-  delete "/#{key}" do
-    @id = key
-    existing_memos = File.exist?("./sample.json") ? JSON.parse(File.read("./sample.json")) : {}
-    existing_memos.delete(@id.to_s)
-    File.open("./sample.json", 'w') do |file|
-      JSON.dump(existing_memos, file)
-    end
-    redirect to("/")
-  end
+get "/:id" do
+  @id = params[:id]
+  @memo = load_memo("./sample.json")[@id.to_s]
+  erb :show
 end
 
+get "/:id/edit" do
+  @id = params[:id]
+  @memo = load_memo("./sample.json")[@id.to_s]
+  erb :edit
+end
 
+patch "/:id/edit" do
+  @id = params[:id]
+  @memos = load_memo("./sample.json")
+  updated_memo = { @id => { "title" => params[:title], "content" => params[:content] }}
+  @memos.update(updated_memo)
+  save_memos("./sample.json", @memos)
+  redirect to("/")
+end
+
+delete "/:id" do
+  @id = params[:id]
+  @memos = load_memo("./sample.json")
+  @memos.delete(@id.to_s)
+  save_memos("./sample.json", @memos)
+  redirect to("/")
+end
