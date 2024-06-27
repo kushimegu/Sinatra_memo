@@ -27,7 +27,8 @@ end
 
 post '/new' do
   memos = File.exist?("./sample.json") ? JSON.parse(File.read("./sample.json")) : {}
-  new_memo = { (memos.size + 1).to_s => { "title" => params[:title], "content" => params[:content] }}
+  max_memo_id = memos.keys.max.to_i
+  new_memo = { (max_memo_id + 1).to_s => { "title" => params[:title], "content" => params[:content] }}
   memos.merge!(new_memo)
   save_memos("./sample.json", memos)
   redirect to("/")
