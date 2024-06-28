@@ -8,6 +8,7 @@ gem 'rubocop'
 gem 'sinatra'
 gem 'sinatra-contrib'
 gem 'sqlite3', '~> 1.4'
+gem 'webrick'
 
 group :development do
   gem 'rubocop-fjord', require: false

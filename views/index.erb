@@ -1,11 +1,12 @@
 <ul>
-  <% @memos.each do |key, value| %>
+  <% @memos.each do |id, memo| %>
   <li>
-    <a href="<%= "/memos/#{key}" %>">
-    <%= value["title"] %>
+    <a href="/memos/<%= id %>">
+    <%== memo["title"] %>
     </a>
   </li>
   <% end %>
 </ul>
-<a href="/memos/new"><button>追加</button></a>
-</form>
+<a href="/memos/new">
+<button>追加</button>
+</a>

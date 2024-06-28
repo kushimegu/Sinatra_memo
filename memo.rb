@@ -4,24 +4,24 @@ require 'sinatra'
 require 'sinatra/reloader'
 require 'json'
 
-helpers do
-  def load_memos(source_file)
-    File.open(source_file) { |file| JSON.parse(file.read) }
-  end
-
-  def save_memos(source_file, memos)
-    File.open(source_file, 'w') do |file|
-      JSON.dump(memos, file)
-    end
-  end
-
-  def escape_html(text)
+helpers do 
+  def h(text)
     Rack::Utils.escape_html(text)
   end
 end
 
+FILE = './memos.json'
+
+def load_memos(source_file)
+  File.open(source_file) { |file| JSON.parse(file.read) }
+end
+
+def save_memos(source_file, memos)
+  File.open(source_file, 'w') { |file| JSON.dump(memos, file) }
+end
+
 get '/memos' do
-  @memos = load_memos('./sample.json')
+  @memos = load_memos(FILE)
   erb :index
 end
 
@@ -30,39 +30,35 @@ get '/memos/new' do
 end
 
 post '/memos' do
-  memos = load_memos('./sample.json')
+  memos = load_memos(FILE)
   max_memo_id = memos.keys.max.to_i
-  new_memo = { (max_memo_id + 1).to_s => { 'title' => escape_html(params[:title]), 'content' => escape_html(params[:content]) } }
+  new_memo = { (max_memo_id + 1).to_s => { 'title' => params[:title], 'content' => params[:content] } }
   memos.merge!(new_memo)
-  save_memos('./sample.json', memos)
+  save_memos(FILE, memos)
   redirect to('/memos')
 end
 
 get '/memos/:id' do
-  @id = params[:id]
-  @memo = load_memos('./sample.json')[@id.to_s]
+  @memo = load_memos(FILE)[params[:id]]
   erb :show
 end
 
 get '/memos/:id/edit' do
-  @id = params[:id]
-  @memo = load_memos('./sample.json')[@id.to_s]
+  @memo = load_memos(FILE)[params[:id]]
   erb :edit
 end
 
 patch '/memos/:id' do
-  @id = params[:id]
-  @memos = load_memos('./sample.json')
-  updated_memo = { @id => { 'title' => params[:title], 'content' => params[:content] } }
+  @memos = load_memos(FILE)
+  updated_memo = { params[:id] => { 'title' => params[:title], 'content' => params[:content] } }
   @memos.update(updated_memo)
-  save_memos('./sample.json', @memos)
+  save_memos(FILE, @memos)
   redirect to('/memos')
 end
 
 delete '/memos/:id' do
-  @id = params[:id]
-  @memos = load_memos('./sample.json')
-  @memos.delete(@id.to_s)
-  save_memos('./sample.json', @memos)
+  @memos = load_memos(FILE)
+  @memos.delete(params[:id])
+  save_memos(FILE, @memos)
   redirect to('/memos')
 end
