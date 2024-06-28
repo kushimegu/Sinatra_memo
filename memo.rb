@@ -20,6 +20,10 @@ def save_memos(source_file, memos)
   File.open(source_file, 'w') { |file| JSON.dump(memos, file) }
 end
 
+not_found do
+  '存在しないページです'
+end
+
 get '/memos' do
   @memos = load_memos(FILE)
   erb :index
@@ -40,12 +44,20 @@ end
 
 get '/memos/:id' do
   @memo = load_memos(FILE)[params[:id]]
-  erb :show
+  if @memo
+    erb :show
+  else
+    status 404
+  end
 end
 
 get '/memos/:id/edit' do
   @memo = load_memos(FILE)[params[:id]]
-  erb :edit
+  if @memo
+    erb :edit
+  else
+    status 404
+  end
 end
 
 patch '/memos/:id' do
