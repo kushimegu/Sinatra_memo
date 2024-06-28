@@ -1,7 +1,7 @@
 <ul>
   <% @memos.each do |key, value| %>
   <li>
-    <a href=<%= "/memos/#{key}" %> >
+    <a href="<%= "/memos/#{key}" %>">
     <%= value["title"] %>
     </a>
   </li>
