@@ -15,54 +15,54 @@ helpers do
     end
   end
 
-  def h(text)
+  def escape_html(text)
     Rack::Utils.escape_html(text)
   end
 end
 
-get '/' do
-  @memos = load_memo("./sample.json")
+get '/memos' do
+  @memos = load_memos("./sample.json")
   erb :index
 end
 
-get '/new' do
+get '/memos/new' do
   erb :new
 end
 
-post '/new' do
-  memos = File.exist?("./sample.json") ? JSON.parse(File.read("./sample.json")) : {}
+post '/memos' do
+  memos = load_memos("./sample.json")
   max_memo_id = memos.keys.max.to_i
-  new_memo = { (max_memo_id + 1).to_s => { "title" => h(params[:title]), "content" => h(params[:content]) }}
+  new_memo = { (max_memo_id + 1).to_s => { "title" => escape_html(params[:title]), "content" => escape_html(params[:content]) }}
   memos.merge!(new_memo)
   save_memos("./sample.json", memos)
-  redirect to("/")
+  redirect to("/memos")
 end
 
-get "/:id" do
+get "/memos/:id" do
   @id = params[:id]
-  @memo = load_memo("./sample.json")[@id.to_s]
+  @memo = load_memos("./sample.json")[@id.to_s]
   erb :show
 end
 
-get "/:id/edit" do
+get "/memos/:id/edit" do
   @id = params[:id]
-  @memo = load_memo("./sample.json")[@id.to_s]
+  @memo = load_memos("./sample.json")[@id.to_s]
   erb :edit
 end
 
-patch "/:id/edit" do
+patch "/memos/:id" do
   @id = params[:id]
-  @memos = load_memo("./sample.json")
+  @memos = load_memos("./sample.json")
   updated_memo = { @id => { "title" => params[:title], "content" => params[:content] }}
   @memos.update(updated_memo)
   save_memos("./sample.json", @memos)
-  redirect to("/")
+  redirect to("/memos")
 end
 
-delete "/:id" do
+delete "/memos/:id" do
   @id = params[:id]
-  @memos = load_memo("./sample.json")
+  @memos = load_memos("./sample.json")
   @memos.delete(@id.to_s)
   save_memos("./sample.json", @memos)
-  redirect to("/")
+  redirect to("/memos")
 end
