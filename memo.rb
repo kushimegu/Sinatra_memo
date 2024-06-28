@@ -14,6 +14,10 @@ helpers do
       JSON.dump(memos, file)
     end
   end
+
+  def h(text)
+    Rack::Utils.escape_html(text)
+  end
 end
 
 get '/' do
@@ -28,7 +32,7 @@ end
 post '/new' do
   memos = File.exist?("./sample.json") ? JSON.parse(File.read("./sample.json")) : {}
   max_memo_id = memos.keys.max.to_i
-  new_memo = { (max_memo_id + 1).to_s => { "title" => params[:title], "content" => params[:content] }}
+  new_memo = { (max_memo_id + 1).to_s => { "title" => h(params[:title]), "content" => h(params[:content]) }}
   memos.merge!(new_memo)
   save_memos("./sample.json", memos)
   redirect to("/")
