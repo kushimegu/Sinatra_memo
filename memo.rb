@@ -4,7 +4,7 @@ require 'sinatra'
 require 'sinatra/reloader'
 require 'json'
 
-helpers do 
+helpers do
   def h(text)
     Rack::Utils.escape_html(text)
   end
@@ -65,7 +65,7 @@ patch '/memos/:id' do
   updated_memo = { params[:id] => { 'title' => params[:title], 'content' => params[:content] } }
   @memos.update(updated_memo)
   save_memos(FILE, @memos)
-  redirect to('/memos')
+  redirect to("/memos/#{params[:id]}")
 end
 
 delete '/memos/:id' do
