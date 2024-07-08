@@ -9,14 +9,14 @@ helpers do
   end
 end
 
-FILE = './memos.json'
+MEMOS_FILE = './memos.json'
 
-def load_memos(source_file)
-  File.open(source_file) { |file| JSON.parse(file.read) }
+def load_memos
+  File.open(MEMOS_FILE) { |file| JSON.parse(file.read) }
 end
 
-def save_memos(source_file, memos)
-  File.open(source_file, 'w') { |file| JSON.dump(memos, file) }
+def save_memos(memos)
+  File.open(MEMOS_FILE, 'w') { |file| JSON.dump(memos, file) }
 end
 
 not_found do
@@ -24,7 +24,7 @@ not_found do
 end
 
 get '/memos' do
-  @memos = load_memos(FILE)
+  @memos = load_memos
   erb :index
 end
 
@@ -33,16 +33,16 @@ get '/memos/new' do
 end
 
 post '/memos' do
-  memos = load_memos(FILE)
+  memos = load_memos
   max_memo_id = memos.keys.max.to_i
   new_memo = { (max_memo_id + 1).to_s => { 'title' => params[:title], 'content' => params[:content] } }
   memos.merge!(new_memo)
-  save_memos(FILE, memos)
+  save_memos(memos)
   redirect to('/memos')
 end
 
 get '/memos/:id' do
-  @memo = load_memos(FILE)[params[:id]]
+  @memo = load_memos[params[:id]]
   if @memo
     erb :show
   else
@@ -51,7 +51,7 @@ get '/memos/:id' do
 end
 
 get '/memos/:id/edit' do
-  @memo = load_memos(FILE)[params[:id]]
+  @memo = load_memos[params[:id]]
   if @memo
     erb :edit
   else
@@ -60,16 +60,16 @@ get '/memos/:id/edit' do
 end
 
 patch '/memos/:id' do
-  @memos = load_memos(FILE)
+  @memos = load_memos
   updated_memo = { params[:id] => { 'title' => params[:title], 'content' => params[:content] } }
   @memos.update(updated_memo)
-  save_memos(FILE, @memos)
+  save_memos(@memos)
   redirect to("/memos/#{params[:id]}")
 end
 
 delete '/memos/:id' do
   @memos = load_memos(FILE)
   @memos.delete(params[:id])
-  save_memos(FILE, @memos)
+  save_memos(@memos)
   redirect to('/memos')
 end
