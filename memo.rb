@@ -60,16 +60,15 @@ get '/memos/:id/edit' do
 end
 
 patch '/memos/:id' do
-  @memos = load_memos
-  updated_memo = { params[:id] => { 'title' => params[:title], 'content' => params[:content] } }
-  @memos.update(updated_memo)
-  save_memos(@memos)
+  memos = load_memos
+  memos[params[:id]] = { 'title' => params[:title], 'content' => params[:content] }
+  save_memos(memos)
   redirect to("/memos/#{params[:id]}")
 end
 
 delete '/memos/:id' do
-  @memos = load_memos(FILE)
-  @memos.delete(params[:id])
-  save_memos(@memos)
+  memos = load_memos
+  memos.delete(params[:id])
+  save_memos(memos)
   redirect to('/memos')
 end
