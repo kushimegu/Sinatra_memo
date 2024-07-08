@@ -1,6 +1,6 @@
 <h2><%== @memo["title"] %></h2>
 <p><%== @memo["content"] %></p>
-<a href="/memos/<%= params[:id] %>/edit"><button>変更</button></a>
+<a href="/memos/<%= params[:id] %>/edit">変更する</a>
 <form action="/memos/<%= params[:id] %>" method="post">
   <input type="hidden" name="_method" value="DELETE">
   <input type="submit" value="削除">
