@@ -49,7 +49,6 @@ GEM
       nokogiri (>= 1.12.0)
     mini_portile2 (2.8.7)
     minitest (5.24.0)
-    multi_json (1.15.0)
     mustermann (3.0.0)
       ruby2_keywords (~> 0.0.1)
     mutex_m (0.2.0)
@@ -110,12 +109,6 @@ GEM
       rack-protection (= 4.0.0)
       rack-session (>= 2.0.0, < 3)
       tilt (~> 2.0)
-    sinatra-contrib (4.0.0)
-      multi_json (>= 0.0.2)
-      mustermann (~> 3.0)
-      rack-protection (= 4.0.0)
-      sinatra (= 4.0.0)
-      tilt (~> 2.0)
     smart_properties (1.17.0)
     strscan (3.1.0)
     tilt (2.3.0)
@@ -134,7 +127,6 @@ DEPENDENCIES
   rubocop
   rubocop-fjord
   sinatra
-  sinatra-contrib
   webrick
 
 BUNDLED WITH

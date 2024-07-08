@@ -6,7 +6,6 @@ gem 'erb_lint', require: false
 gem 'rackup'
 gem 'rubocop'
 gem 'sinatra'
-gem 'sinatra-contrib'
 gem 'webrick'
 
 group :development do
