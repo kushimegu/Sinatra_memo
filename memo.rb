@@ -34,8 +34,7 @@ end
 
 post '/memos' do
   memos = load_memos
-  max_memo_id = memos.keys.max.to_i
-  new_memo = { (max_memo_id + 1).to_s => { 'title' => params[:title], 'content' => params[:content] } }
+  new_memo = { SecureRandom.uuid => { 'title' => params[:title], 'content' => params[:content] } }
   memos.merge!(new_memo)
   save_memos(memos)
   redirect to('/memos')
