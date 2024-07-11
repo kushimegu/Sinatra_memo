@@ -124,7 +124,6 @@ PLATFORMS
 DEPENDENCIES
   erb_lint
   rackup
-  rubocop
   rubocop-fjord
   sinatra
   webrick
