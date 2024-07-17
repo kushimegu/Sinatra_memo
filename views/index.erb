@@ -1,7 +1,7 @@
 <ul>
-  <% @memos.each do |id, memo| %>
+  <% @memos.each do |row| %>
   <li>
-    <a href="/memos/<%= id %>"><%== memo["title"] %></a>
+    <a href="/memos/<%= row["id"] %>"><%== row["title"] %></a>
   </li>
   <% end %>
 </ul>
