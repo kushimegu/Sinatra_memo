@@ -3,8 +3,10 @@
 require 'sinatra'
 require 'pg'
 
-def conn 
-  PG.connect( dbname: 'sinatra_memo_db')
+CONN = PG.connect(dbname: 'sinatra_memo_db')
+
+def conn
+  CONN
 end
 
 not_found do
@@ -12,7 +14,7 @@ not_found do
 end
 
 get '/memos' do
-  @memos = conn.exec( "SELECT * FROM memos" )
+  @memos = conn.exec('SELECT * FROM memos')
   erb :index
 end
 
@@ -21,12 +23,12 @@ get '/memos/new' do
 end
 
 post '/memos' do
-  conn.exec_params( "INSERT INTO memos (title, content) VALUES ($1, $2)", [params[:title], params[:content]])
+  conn.exec_params('INSERT INTO memos (title, content) VALUES ($1, $2)', [params[:title], params[:content]])
   redirect to('/memos')
 end
 
 get '/memos/:id' do
-  @memo = conn.exec_params( "SELECT * FROM memos WHERE id=$1", [params[:id]])
+  @memo = conn.exec_params('SELECT * FROM memos WHERE id=$1', [params[:id]]).first
   if @memo
     erb :show
   else
@@ -35,7 +37,7 @@ get '/memos/:id' do
 end
 
 get '/memos/:id/edit' do
-  @memo = conn.exec_params( "SELECT * FROM memos WHERE id=$1", [params[:id]] )
+  @memo = conn.exec_params('SELECT * FROM memos WHERE id=$1', [params[:id]]).first
   if @memo
     erb :edit
   else
@@ -44,14 +46,11 @@ get '/memos/:id/edit' do
 end
 
 patch '/memos/:id' do
-  conn.transaction do
-    conn.exec_params( "UPDATE memos SET title=$1 WHERE id=$2", [params[:title], params[:id]])
-    conn.exec_params( "UPDATE memos SET content=$1 WHERE id=$2", [params[:content], params[:id]])
-  end
+  conn.exec_params('UPDATE memos SET title=$1, content=$2 WHERE id=$3', [params[:title], params[:content], params[:id]])
   redirect to("/memos/#{params[:id]}")
 end
 
 delete '/memos/:id' do
-  conn.exec_params( "DELETE FROM memos WHERE id=$1", [params[:id]])
+  conn.exec_params('DELETE FROM memos WHERE id=$1', [params[:id]])
   redirect to('/memos')
 end
