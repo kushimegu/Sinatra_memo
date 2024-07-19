@@ -14,7 +14,7 @@ $ cd Sinatra_memo
 ```bash
 $ bundle install
 ```
-4. postgresqlをインストールし、データベースに接続する
+4. PostgreSQLをインストールし、接続する
 5. データベースを作成する
 ```sql
 =# CREATE DATABASE sinatra_memo_db;
