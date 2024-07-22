@@ -5,6 +5,10 @@ require 'pg'
 
 CONN = PG.connect(dbname: 'sinatra_memo_db')
 
+def load_memo
+  CONN.exec_params('SELECT * FROM memos WHERE id=$1', [params[:id]]).first
+end
+
 not_found do
   '存在しないページです'
 end
@@ -24,7 +28,7 @@ post '/memos' do
 end
 
 get '/memos/:id' do
-  @memo = CONN.exec_params('SELECT * FROM memos WHERE id=$1', [params[:id]]).first
+  @memo = load_memo
   if @memo
     erb :show
   else
@@ -33,7 +37,7 @@ get '/memos/:id' do
 end
 
 get '/memos/:id/edit' do
-  @memo = CONN.exec_params('SELECT * FROM memos WHERE id=$1', [params[:id]]).first
+  @memo = load_memo
   if @memo
     erb :edit
   else
@@ -42,7 +46,8 @@ get '/memos/:id/edit' do
 end
 
 patch '/memos/:id' do
-  CONN.exec_params('UPDATE memos SET title=$1, content=$2 WHERE id=$3', [params[:title], params[:content], params[:id]])
+  params = { 1 => params[:title], 2 => params[:content], 3 => params[:id] }
+  CONN.exec_params('UPDATE memos SET title=$1, content=$2 WHERE id=$3', params)
   redirect to("/memos/#{params[:id]}")
 end
 
