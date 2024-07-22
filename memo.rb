@@ -10,7 +10,7 @@ not_found do
 end
 
 get '/memos' do
-  @memos = CONN.exec('SELECT * FROM memos')
+  @memos = CONN.exec('SELECT * FROM memos ORDER BY id')
   erb :index
 end
 
