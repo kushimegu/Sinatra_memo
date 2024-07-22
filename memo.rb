@@ -46,8 +46,8 @@ get '/memos/:id/edit' do
 end
 
 patch '/memos/:id' do
-  params = { 1 => params[:title], 2 => params[:content], 3 => params[:id] }
-  CONN.exec_params('UPDATE memos SET title=$1, content=$2 WHERE id=$3', params)
+  get_params = { 1 => params[:title], 2 => params[:content], 3 => params[:id] }
+  CONN.exec_params('UPDATE memos SET title=$1, content=$2 WHERE id=$3', get_params.values_at(1, 2, 3))
   redirect to("/memos/#{params[:id]}")
 end
 
