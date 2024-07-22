@@ -6,7 +6,11 @@ require 'pg'
 CONN = PG.connect(dbname: 'sinatra_memo_db')
 
 def load_memo
-  CONN.exec_params('SELECT * FROM memos WHERE id=$1', [params[:id]]).first
+  CONN.exec_params('SELECT * FROM memos WHERE id=$1', load_params.values_at(:id)).first
+end
+
+def load_params
+  { title: params[:title], content: params[:content], id: params[:id] }
 end
 
 not_found do
@@ -23,7 +27,7 @@ get '/memos/new' do
 end
 
 post '/memos' do
-  CONN.exec_params('INSERT INTO memos (title, content) VALUES ($1, $2)', [params[:title], params[:content]])
+  CONN.exec_params('INSERT INTO memos (title, content) VALUES ($1, $2)', load_params.values_at(:title, :content))
   redirect to('/memos')
 end
 
@@ -46,12 +50,11 @@ get '/memos/:id/edit' do
 end
 
 patch '/memos/:id' do
-  get_params = { 1 => params[:title], 2 => params[:content], 3 => params[:id] }
-  CONN.exec_params('UPDATE memos SET title=$1, content=$2 WHERE id=$3', get_params.values_at(1, 2, 3))
+  CONN.exec_params('UPDATE memos SET title=$1, content=$2 WHERE id=$3', load_params.values_at(:title, :content, :id))
   redirect to("/memos/#{params[:id]}")
 end
 
 delete '/memos/:id' do
-  CONN.exec_params('DELETE FROM memos WHERE id=$1', [params[:id]])
+  CONN.exec_params('DELETE FROM memos WHERE id=$1', load_params.values_at(:id))
   redirect to('/memos')
 end
