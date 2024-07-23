@@ -5,20 +5,32 @@ require 'pg'
 
 CONN = PG.connect(dbname: 'sinatra_memo_db')
 
-def load_memo
-  CONN.exec_params('SELECT * FROM memos WHERE id=$1', params.values_at(:id)).first
+def load_memos
+  CONN.exec('SELECT * FROM memos ORDER BY id')
 end
 
-# def load_params
-#   { title: params[:title], content: params[:content], id: params[:id] }
-# end
+def load_memo(id)
+  CONN.exec_params('SELECT * FROM memos WHERE id = $1', [id]).first
+end
+
+def make_memo(title, content)
+  CONN.exec_params('INSERT INTO memos (title, content) VALUES ($1, $2)', [title, content])
+end
+
+def update_memo(title, content, id)
+  CONN.exec_params('UPDATE memos SET title = $1, content = $2 WHERE id = $3', [title, content, id])
+end
+
+def delete_memo(id)
+  CONN.exec_params('DELETE FROM memos WHERE id = $1', [id])
+end
 
 not_found do
   '存在しないページです'
 end
 
 get '/memos' do
-  @memos = CONN.exec('SELECT * FROM memos ORDER BY id')
+  @memos = load_memos
   erb :index
 end
 
@@ -27,12 +39,12 @@ get '/memos/new' do
 end
 
 post '/memos' do
-  CONN.exec_params('INSERT INTO memos (title, content) VALUES ($1, $2)', params.values_at(:title, :content))
+  make_memo(params[:title], params[:content])
   redirect to('/memos')
 end
 
 get '/memos/:id' do
-  @memo = load_memo
+  @memo = load_memo(params[:id])
   if @memo
     erb :show
   else
@@ -41,7 +53,7 @@ get '/memos/:id' do
 end
 
 get '/memos/:id/edit' do
-  @memo = load_memo
+  @memo = load_memo(params[:id])
   if @memo
     erb :edit
   else
@@ -50,11 +62,11 @@ get '/memos/:id/edit' do
 end
 
 patch '/memos/:id' do
-  CONN.exec_params('UPDATE memos SET title=$1, content=$2 WHERE id=$3', params.values_at(:title, :content, :id))
+  update_memo(params[:title], params[:content], params[:id])
   redirect to("/memos/#{params[:id]}")
 end
 
 delete '/memos/:id' do
-  CONN.exec_params('DELETE FROM memos WHERE id=$1', params.values_at(:id))
+  delete_memo(params[:id])
   redirect to('/memos')
 end
