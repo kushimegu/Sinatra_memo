@@ -13,12 +13,12 @@ def load_memo(id)
   CONN.exec_params('SELECT * FROM memos WHERE id = $1', [id]).first
 end
 
-def make_memo(title, content)
-  CONN.exec_params('INSERT INTO memos (title, content) VALUES ($1, $2)', [title, content])
+def create_memo(params)
+  CONN.exec_params('INSERT INTO memos (title, content) VALUES ($1, $2)', params.values_at(:title, :content))
 end
 
-def update_memo(title, content, id)
-  CONN.exec_params('UPDATE memos SET title = $1, content = $2 WHERE id = $3', [title, content, id])
+def update_memo(params)
+  CONN.exec_params('UPDATE memos SET title = $1, content = $2 WHERE id = $3', params.values_at(:title, :content, :id))
 end
 
 def delete_memo(id)
@@ -39,7 +39,7 @@ get '/memos/new' do
 end
 
 post '/memos' do
-  make_memo(params[:title], params[:content])
+  create_memo(params)
   redirect to('/memos')
 end
 
@@ -62,7 +62,7 @@ get '/memos/:id/edit' do
 end
 
 patch '/memos/:id' do
-  update_memo(params[:title], params[:content], params[:id])
+  update_memo(params)
   redirect to("/memos/#{params[:id]}")
 end
 
