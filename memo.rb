@@ -1,17 +1,28 @@
 # frozen_string_literal: true
 
 require 'sinatra'
-require 'json'
+require 'pg'
 
-
-MEMOS_FILE = './memos.json'
+CONN = PG.connect(dbname: 'sinatra_memo_db')
 
 def load_memos
-  File.open(MEMOS_FILE) { |file| JSON.parse(file.read) }
+  CONN.exec('SELECT * FROM memos ORDER BY id')
 end
 
-def save_memos(memos)
-  File.open(MEMOS_FILE, 'w') { |file| JSON.dump(memos, file) }
+def load_memo(id)
+  CONN.exec_params('SELECT * FROM memos WHERE id = $1', [id]).first
+end
+
+def create_memo(params)
+  CONN.exec_params('INSERT INTO memos (title, content) VALUES ($1, $2)', params.values_at(:title, :content))
+end
+
+def update_memo(params)
+  CONN.exec_params('UPDATE memos SET title = $1, content = $2 WHERE id = $3', params.values_at(:title, :content, :id))
+end
+
+def delete_memo(id)
+  CONN.exec_params('DELETE FROM memos WHERE id = $1', [id])
 end
 
 not_found do
@@ -28,15 +39,12 @@ get '/memos/new' do
 end
 
 post '/memos' do
-  memos = load_memos
-  new_memo = { SecureRandom.uuid => { 'title' => params[:title], 'content' => params[:content] } }
-  memos.merge!(new_memo)
-  save_memos(memos)
+  create_memo(params)
   redirect to('/memos')
 end
 
 get '/memos/:id' do
-  @memo = load_memos[params[:id]]
+  @memo = load_memo(params[:id])
   if @memo
     erb :show
   else
@@ -45,7 +53,7 @@ get '/memos/:id' do
 end
 
 get '/memos/:id/edit' do
-  @memo = load_memos[params[:id]]
+  @memo = load_memo(params[:id])
   if @memo
     erb :edit
   else
@@ -54,15 +62,11 @@ get '/memos/:id/edit' do
 end
 
 patch '/memos/:id' do
-  memos = load_memos
-  memos[params[:id]] = { 'title' => params[:title], 'content' => params[:content] }
-  save_memos(memos)
+  update_memo(params)
   redirect to("/memos/#{params[:id]}")
 end
 
 delete '/memos/:id' do
-  memos = load_memos
-  memos.delete(params[:id])
-  save_memos(memos)
+  delete_memo(params[:id])
   redirect to('/memos')
 end
